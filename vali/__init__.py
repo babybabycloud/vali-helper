@@ -3,15 +3,18 @@
 from abc import ABC
 from functools import wraps
 from inspect import getcallargs
-from typing import Any, List, Dict
+from typing import Any, Dict, Generic, List, TypeVar
+
+T = TypeVar('T')
 
 
 class ValidationItem(ABC):
-    def __init__(self, *, name: str, message: str):
+    def __init__(self, *, name: str, message: str, value: Generic[T]):
         self._name = name
         self._message = message
+        self.value = value
 
-    def validate(self) -> bool:
+    def validate(self, vali_value: Generic[T]) -> bool:
         pass
 
 
@@ -27,7 +30,7 @@ class Vali:
     def _validate(self, call_args: Dict[str, Any]):
         for vali_item in self.__vali_list:
             if vali_item.validate(call_args.get(vali_item._name)) == False:
-                raise ValiFailError(vali_item._message)
+                raise ValiFailError(vali_item._message.format(vali_item.value))
 
 def validator(cls=Vali, *, vali_list: List[ValidationItem]):
     def outer(f):
