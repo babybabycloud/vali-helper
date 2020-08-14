@@ -2,7 +2,7 @@
 
 from . import ValidationItem
 from numbers import Number
-from typing import Tuple
+from typing import Any, Tuple
 
 
 class LessThan(ValidationItem):
@@ -14,7 +14,7 @@ class LessThan(ValidationItem):
 
 
 class GreaterThan(ValidationItem):
-    def __init__(self, name, value: Number):
+    def __init__(self, name: str, value: Number):
         super().__init__(name=name, message="The validation value must greater than {}", value=value)
 
     def validate(self, vali_value: Number) -> bool:
@@ -22,7 +22,7 @@ class GreaterThan(ValidationItem):
 
 
 class Range(ValidationItem):
-    def __init__(self, name, value: Tuple[Number, Number]):
+    def __init__(self, name: str, value: Tuple[Number, Number]):
         super().__init__(name=name, message="The validation value must be in range {}", value=value)
 
     def validate(self, vali_value: Number) -> bool:
@@ -37,3 +37,10 @@ class Range(ValidationItem):
 
         return vali_result
 
+
+class Require(ValidationItem):
+    def __init__(self, name: str):
+        super().__init__(name=name, message="This attribute is required, can't be None", value=None)
+    
+    def validate(self, vali_value: Any) -> bool:
+        return vali_value != self.value
