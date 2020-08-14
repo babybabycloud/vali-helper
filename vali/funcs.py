@@ -6,41 +6,61 @@ from typing import Any, Tuple
 
 
 class LessThan(ValidationItem):
+    """
+    Validate for if the value lesses than validation value
+    """
+    ERROR_MESSAGE = "less than"
     def __init__(self, name: str, value: Number):
-        super().__init__(name=name, message="The validation value must less than {}", value=value)
+        super().__init__(name=name, value=value)
 
-    def validate(self, vali_value: Number) -> bool:
-        return vali_value < self.value
+    def validate(self, vali_value: Number) -> Tuple[bool, str]:
+        result = vali_value < self.value
+        return result, None if result else self.ERROR_MESSAGE_TEMPLATE.format(self.ERROR_MESSAGE, self.value, vali_value)
 
 
 class GreaterThan(ValidationItem):
+    """
+    Validate for if the value greaters than validation value
+    """
+    ERROR_MESSAGE = "greater than"
     def __init__(self, name: str, value: Number):
-        super().__init__(name=name, message="The validation value must greater than {}", value=value)
+        super().__init__(name=name, value=value)
 
-    def validate(self, vali_value: Number) -> bool:
-        return vali_value > self.value
+    def validate(self, vali_value: Number) -> Tuple[bool, str]:
+        result = vali_value > self.value
+        return result, None if result else self.ERROR_MESSAGE_TEMPLATE.format(self.ERROR_MESSAGE, self.value, vali_value)
 
 
 class Range(ValidationItem):
+    """
+    Validate for if the value is in a range. 
+    [a, b) is the value could equal a, but cannot equal b.
+    """
+    ERROR_MESSAGE = "be in range"
     def __init__(self, name: str, value: Tuple[Number, Number]):
-        super().__init__(name=name, message="The validation value must be in range {}", value=value)
+        super().__init__(name=name, value=value)
 
-    def validate(self, vali_value: Number) -> bool:
+    def validate(self, vali_value: Number) -> Tuple[bool, str]:
         begin = self.value[0]
         end = self.value[1]
-        vali_result = False
+        result = False
 
-        if begin != None:
-            vali_result = vali_value >= begin
-        if end != None:
-            vali_result = vali_value < end if vali_result is True else False
-
-        return vali_result
+        if begin != None and end != None:
+            result = begin <= vali_value and vali_value < end
+        elif begin != None:
+            result = begin <= vali_value
+        elif end != None:
+            result = vali_value < end
+        return result, None if result else self.ERROR_MESSAGE_TEMPLATE.format(self.ERROR_MESSAGE, self.value, vali_value)
 
 
 class Require(ValidationItem):
+    """
+    Validate for a value cannot be None
+    """
     def __init__(self, name: str):
-        super().__init__(name=name, message="This attribute is required, can't be None", value=None)
+        super().__init__(name=name, value=None)
     
-    def validate(self, vali_value: Any) -> bool:
-        return vali_value != self.value
+    def validate(self, vali_value: Any) -> Tuple[bool, str]:
+        result = vali_value != self.value
+        return result, None if result else "This attribute is required, can't be None"

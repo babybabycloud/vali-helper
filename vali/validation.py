@@ -3,19 +3,41 @@
 from abc import ABC
 from functools import wraps
 from inspect import getcallargs
-from typing import Any, Dict, Generic, List, NewType, TypeVar
+from typing import Any, Dict, Generic, List, NewType, Tuple, TypeVar
 
+
+__all__ = [
+    'ValidationItem',
+    'Vali',
+    'validator',
+    'ValiProp',
+    'ValiFailError'
+]
 
 T = TypeVar('T')
 
 
 class ValidationItem(ABC):
-    def __init__(self, *, name: str, message: str, value: Generic[T]):
+    """
+    Validation item is the validation base class. 
+    The subclass should implement the actual validate logic.
+    """
+    ERROR_MESSAGE_TEMPLATE = "The validation value must {} {}, but provided"
+    def __init__(self, *, name: str, value: Generic[T]):
+        """
+        @param name: The name of the argument needed to be validated
+        @param value: The value used to be compared 
+        """
         self._name = name
-        self._message = message
         self.value = value
 
-    def validate(self, vali_value: Generic[T]) -> bool:
+    def validate(self, vali_value: Generic[T]) -> Tuple[bool, str]:
+        """
+        @param vali_value: The value needed to be validated
+        @return: A tuple
+            The bool value indicates the result of the validation
+            The string value is the error message for why validation failed.
+        """
         pass
 
 
@@ -23,7 +45,14 @@ ValiItems = NewType('ValiItems', List[ValidationItem])
 
 
 class Vali:
+    """
+        Validation framework base class
+    """
     def __init__(self, func, vali_list: ValiItems):
+        """
+        @param func: The wrapped function
+        @param vali_list: A list contains the main validation class instance
+        """
         self.__func = func
         self.__vali_list = vali_list
 
@@ -33,11 +62,18 @@ class Vali:
 
     def _validate(self, call_args: Dict[str, Any]):
         for vali_item in self.__vali_list:
-            if vali_item.validate(call_args.get(vali_item._name)) == False:
-                raise ValiFailError(vali_item._message.format(vali_item.value))
+            result, message = vali_item.validate(call_args.get(vali_item._name))
+            if result == False:
+                raise ValiFailError(message)
 
 
 def validator(cls=Vali, *, vali_list: ValiItems):
+    """
+    The validation decorator, can be used to decorate a function
+    
+    @param cls: Vali or subclass of Vali.
+    @param vali_list: A list contains the main validation class instance
+    """
     def outer(f):
         c = cls(f, vali_list)
         @wraps(f)
@@ -48,7 +84,13 @@ def validator(cls=Vali, *, vali_list: ValiItems):
 
 
 class ValiProp:
+    """
+        A descriptor for validating the class attribute
+    """
     def __init__(self, vali_list: ValiItems):
+        """
+        @param vali_list: A list contains the main validation class instance
+        """
         self._name = str(id(self))
         self.__vali_list = vali_list
 
@@ -59,8 +101,9 @@ class ValiProp:
 
     def __set__(self, instance: Any, value: Any):
         for vali in self.__vali_list:
-            if vali.validate(value) == False:
-                raise ValiFailError(vali._message.format(vali.value))
+            result, message = vali.validate(value) 
+            if result == False:
+                raise ValiFailError(message)
 
         if instance is None:
             type(instance).__dict__[self._name] = value
@@ -69,5 +112,8 @@ class ValiProp:
 
 
 class ValiFailError(Exception):
+    """
+    The Exception would be raised when validation failed.
+    """
     def __init__(self, message):
         self.message = message
