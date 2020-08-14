@@ -31,5 +31,33 @@ class TestGreaterThan(unittest.TestCase):
         self.assertRaises(ValiFailError, greater_than_test_func, 0.0)
 
 
+@validator(vali_list=[Range('args', (10, 20))])
+def range_func(args: int):
+    pass
+
+
+@validator(vali_list=[Range('args', (None, 20))])
+def range_func_with_end(args: int):
+    pass
+
+
+@validator(vali_list=[Range('args', (20, None))])
+def range_func_with_start(args: int):
+    pass
+
+
+class TestRange(unittest.TestCase):
+    def test_range_pass(self):
+        range_func(10)
+        fange_func_with_start(30)
+        fange_func_with_end(10)
+
+    def test_range_pass(self):
+        self.assertRaises(ValiFailError, range_func, 9)
+        self.assertRaises(ValiFailError, range_func, 20)
+        self.assertRaises(ValiFailError, range_func_with_start, 10)
+        self.assertRaises(ValiFailError, range_func_with_end, 30)
+
+
 if __name__ == '__main__':
     unittest.main()
