@@ -5,7 +5,7 @@ from . import validator, ValiFailError, ValiProp
 from .funcs import *
 
 
-@validator(vali_list=[LessThan('args', 10)])
+@validator(valis=[LessThan('args', 10)])
 def less_than_test_func(args: int):
     pass
 
@@ -18,7 +18,7 @@ class TestLessThan(unittest.TestCase):
         self.assertRaises(ValiFailError, less_than_test_func, 11)
 
 
-@validator(vali_list=[GreaterThan('args', 20)])
+@validator(valis=[GreaterThan('args', 20)])
 def greater_than_test_func(args: int):
     pass
 
@@ -31,17 +31,17 @@ class TestGreaterThan(unittest.TestCase):
         self.assertRaises(ValiFailError, greater_than_test_func, 0.0)
 
 
-@validator(vali_list=[Range('args', (10, 20))])
+@validator(valis=[Range('args', (10, 20))])
 def range_func(args: int):
     pass
 
 
-@validator(vali_list=[Range('args', (None, 20))])
+@validator(valis=[Range('args', (None, 20))])
 def range_func_with_end(args: int):
     pass
 
 
-@validator(vali_list=[Range('args', (20, None))])
+@validator(valis=[Range('args', (20, None))])
 def range_func_with_start(args: int):
     pass
 
@@ -60,7 +60,7 @@ class TestRange(unittest.TestCase):
 
 
 class RequireClass:
-    required_attr = ValiProp([Require('required_attr')])
+    required_attr = ValiProp([Required('required_attr')])
     non_required = None
 
 
@@ -81,6 +81,31 @@ class TestRequire(unittest.TestCase):
         print(instance.required_attr)
         instance.required_attr = None
 
+
+@validator(valis=Include('age', [10, 20, 30]))
+def include_test(age: int):
+    pass
+
+
+class TestInclude(unittest.TestCase):
+    def test_include_pass(self):
+        include_test(10)
+
+    def test_include_fail(self):
+        self.assertRaises(ValiFailError, include_test, 29)
+
+
+@validator(valis=Exclude('age', [10, 20, 30]))
+def include_test(age: int):
+    pass
+
+
+class TestInclude(unittest.TestCase):
+    def test_include_pass(self):
+        include_test(39)
+
+    def test_include_fail(self):
+        self.assertRaises(ValiFailError, include_test, 20)
 
 if __name__ == '__main__':
     unittest.main()

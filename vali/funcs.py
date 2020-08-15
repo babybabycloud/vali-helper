@@ -1,8 +1,9 @@
 # encoding: utf-8
 
 from . import ValidationItem
+from .validation import T
 from numbers import Number
-from typing import Any, Tuple
+from typing import Any, Tuple, Iterable
 
 
 class LessThan(ValidationItem):
@@ -54,7 +55,7 @@ class Range(ValidationItem):
         return result, None if result else self.ERROR_MESSAGE_TEMPLATE.format(self.ERROR_MESSAGE, self.value, vali_value)
 
 
-class Require(ValidationItem):
+class Required(ValidationItem):
     """
     Validate for a value cannot be None
     """
@@ -64,3 +65,29 @@ class Require(ValidationItem):
     def validate(self, vali_value: Any) -> Tuple[bool, str]:
         result = vali_value != self.value
         return result, None if result else "This attribute is required, can't be None"
+
+
+class Include(ValidationItem):
+    """
+    Validate for the validation values contain the value
+    """
+    ERROR_MESSAGE = "be contained in"
+    def __init__(self, name: str, values: Iterable[T]):
+        super().__init__(name=name, value=values)
+
+    def validate(self, vali_value: T) -> Tuple[bool, str]:
+        result = vali_value in self.value
+        return result, None if result else self.ERROR_MESSAGE_TEMPLATE.format(self.ERROR_MESSAGE, self.value, vali_value)
+
+
+class Exclude(ValidationItem):
+    """
+    Validate for the validation values don't contain the value
+    """
+    ERROR_MESSAGE = "not be contained in"
+    def __init__(self, name: str, values: Iterable[T]):
+        super().__init__(name=name, value=values)
+
+    def validate(self, vali_value: T) -> Tuple[bool, str]:
+        result = vali_value not in self.value
+        return result, None if result else self.ERROR_MESSAGE_TEMPLATE.format(self.ERROR_MESSAGE, self.value, vali_value)
