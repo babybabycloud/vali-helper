@@ -5,7 +5,7 @@ from . import validator, ValiFailError, ValiProp
 from .funcs import *
 
 
-@validator(valis=[LessThan('args', 10)])
+@validator(valis=[LessThan(name='args', value=10)])
 def less_than_test_func(args: int):
     pass
 
@@ -18,7 +18,7 @@ class TestLessThan(unittest.TestCase):
         self.assertRaises(ValiFailError, less_than_test_func, 11)
 
 
-@validator(valis=[GreaterThan('args', 20)])
+@validator(valis=[GreaterThan(name='args', value=20)])
 def greater_than_test_func(args: int):
     pass
 
@@ -31,17 +31,17 @@ class TestGreaterThan(unittest.TestCase):
         self.assertRaises(ValiFailError, greater_than_test_func, 0.0)
 
 
-@validator(valis=[Range('args', (10, 20))])
+@validator(valis=[Range(name='args', value=(10, 20))])
 def range_func(args: int):
     pass
 
 
-@validator(valis=[Range('args', (None, 20))])
+@validator(valis=[Range(name='args', value=(None, 20))])
 def range_func_with_end(args: int):
     pass
 
 
-@validator(valis=[Range('args', (20, None))])
+@validator(valis=[Range(name='args', value=(20, None))])
 def range_func_with_start(args: int):
     pass
 
@@ -60,7 +60,7 @@ class TestRange(unittest.TestCase):
 
 
 class RequireClass:
-    required_attr = ValiProp([Required('required_attr')])
+    required_attr = ValiProp([Required(name='required_attr', value=None)])
     non_required = None
 
 
@@ -82,7 +82,7 @@ class TestRequire(unittest.TestCase):
         instance.required_attr = None
 
 
-@validator(valis=Include('age', [10, 20, 30]))
+@validator(valis=Include(name='age', value=[10, 20, 30]))
 def include_test(age: int):
     pass
 
@@ -95,7 +95,7 @@ class TestInclude(unittest.TestCase):
         self.assertRaises(ValiFailError, include_test, 29)
 
 
-@validator(valis=Exclude('age', [10, 20, 30]))
+@validator(valis=Exclude(name='age', value=[10, 20, 30]))
 def include_test(age: int):
     pass
 
