@@ -3,7 +3,7 @@
 from . import ValidationItem
 from .validation import T
 from numbers import Number
-from typing import Any, Tuple, Iterable
+from typing import Any, Tuple
 
 
 class LessThan(ValidationItem):
@@ -12,7 +12,7 @@ class LessThan(ValidationItem):
     """
     ERROR_MESSAGE = "less than"
 
-    def test(self, vali_value: Number) -> Tuple[bool, str]:
+    def test(self, vali_value: Number) -> bool:
         return vali_value < self.value
 
 
@@ -22,7 +22,7 @@ class GreaterThan(ValidationItem):
     """
     ERROR_MESSAGE = "greater than"
 
-    def test(self, vali_value: Number) -> Tuple[bool, str]:
+    def test(self, vali_value: Number) -> bool:
         return vali_value > self.value
 
 
@@ -33,7 +33,7 @@ class Range(ValidationItem):
     """
     ERROR_MESSAGE = "be in range"
 
-    def test(self, vali_value: Number) -> Tuple[bool, str]:
+    def test(self, vali_value: Number) -> bool:
         begin = self.value[0]
         end = self.value[1]
         result = False
@@ -53,7 +53,7 @@ class Required(ValidationItem):
     """
     ERROR_MESSAGE = "This attribute is required, can't be "
 
-    def test(self, vali_value: Any) -> Tuple[bool, str]:
+    def test(self, vali_value: Any) -> bool:
         return vali_value != self.value
 
 
@@ -63,7 +63,7 @@ class Include(ValidationItem):
     """
     ERROR_MESSAGE = "be contained in"
 
-    def test(self, vali_value: T) -> Tuple[bool, str]:
+    def test(self, vali_value: T) -> bool:
         return vali_value in self.value
 
 
@@ -71,7 +71,23 @@ class Exclude(ValidationItem):
     """
     Validate for the validation values don't contain the value
     """
-    ERROR_MESSAGE = "not be contained in"
+    ERROR_MESSAGE = "shouldn't be contained in"
 
-    def test(self, vali_value: T) -> Tuple[bool, str]:
+    def test(self, vali_value: T) -> bool:
         return vali_value not in self.value
+
+
+class Match(ValidationItem):
+    """
+    Validate for a string can match a regular expression
+    """
+    ERROR_MESSAGE = "not match to"
+
+    def test(self, vali_value: str) -> bool:
+        """
+        :param vali_value: A regular expression.
+        """
+        import re
+        vali_c = re.compile(self.value)
+        return vali_c.search(vali_value) != None
+        
