@@ -107,5 +107,15 @@ class TestInclude(unittest.TestCase):
     def test_include_fail(self):
         self.assertRaises(ValiFailError, include_test, 20)
 
-if __name__ == '__main__':
-    unittest.main()
+
+@validator(valis=Match(name='name', value="^abc.*D$"))
+def match_test(name: str):
+    pass
+
+
+class TestMatch(unittest.TestCase):
+    def test_match_pass(self):
+        match_test("abcdABCD")
+
+    def test_match_fail(self):
+        self.assertRaises(ValiFailError, match_test, "ABCDabcd")
