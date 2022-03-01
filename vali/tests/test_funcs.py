@@ -1,8 +1,7 @@
 # encoding: utf-8
 
 import unittest
-from vali import validator, ValiFailError, ValiProp
-from vali.funcs import *
+from vali import *
 
 
 @validator(valis=[LessThan(name='args', value=10)])

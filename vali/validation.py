@@ -2,10 +2,9 @@
 
 import collections
 
-from abc import ABC
 from functools import wraps
 from inspect import getcallargs
-from typing import Any, Dict, Generic, List, NewType, Tuple, TypeVar
+from typing import Any, Dict, Generic, List, NewType, TypeVar
 
 
 __all__ = [
