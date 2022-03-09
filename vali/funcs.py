@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from numbers import Number
-from typing import Any, Tuple
+from typing import Any
 
 from .validation import ValidationItem, T
 
@@ -12,7 +12,8 @@ __all__ = [
     'Range',
     'Required',
     'Include',
-    'Exclude'
+    'Exclude',
+    'Match',
 ]
 
 

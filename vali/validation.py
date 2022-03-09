@@ -89,15 +89,15 @@ class Vali:
         :param func: The wrapped function
         :param valis: A list contains the main validation class instance
         """
-        self.__func = func
-        self.__valis = valis if isinstance(valis, collections.Iterable) else (valis,)
+        self._func = func
+        self._valis = valis if isinstance(valis, collections.Iterable) else (valis,)
 
     def __call__(self, *args: Any, **kwargs: Any):
-        self._validate(getcallargs(self.__func, *args, **kwargs))
-        return self.__func(*args, **kwargs)
+        self._validate(getcallargs(self._func, *args, **kwargs))
+        return self._func(*args, **kwargs)
 
     def _validate(self, call_args: Dict[str, Any]):
-        for vali_item in self.__valis:
+        for vali_item in self._valis:
             vali_result = vali_item.validate(call_args.get(vali_item._name))
             if vali_result.result == False:
                 raise ValiFailError(vali_result.message)
@@ -127,8 +127,7 @@ class ValiProp:
         """
         :param valis: A list contains the main validation class instance
         """
-        self._name = str(id(self))
-        self.__valis = valis
+        self._valis = valis
 
     def __get__(self, instance: Any, owner: Any):
         if instance is None:
@@ -136,7 +135,7 @@ class ValiProp:
         return instance.__dict__.get(self._name)
 
     def __set__(self, instance: Any, value: Any):
-        for vali in self.__valis:
+        for vali in self._valis:
             vali_result= vali.validate(value) 
             if vali_result.result == False:
                 raise ValiFailError(vali_result.message)
@@ -145,6 +144,9 @@ class ValiProp:
             type(instance).__dict__[self._name] = value
         else:
             instance.__dict__[self._name] = value
+
+    def __set_name__(self, owner, name):
+        self._name = '_' + name
 
 
 class ValiFailError(Exception):
