@@ -1,4 +1,4 @@
 # encoding: utf-8
 
-from .funcs import *
+from .helper import *
 from .validation import *

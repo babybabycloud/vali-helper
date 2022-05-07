@@ -58,14 +58,13 @@ class TestRange(unittest.TestCase):
         self.assertRaises(ValiFailError, range_func_with_end, 30)
 
 
-class RequireClass:
-    required_attr = ValiProp([Required(name='required_attr', value=None)])
-    non_required = None
-
-
 class TestRequire(unittest.TestCase):
+    class RequireClass:
+        required_attr = ValiProp([Required(name='required_attr', value=None)])
+        non_required = None
+
     def setUp(self):
-        self.rc = RequireClass()
+        self.rc = TestRequire.RequireClass()
 
     def test_require_pass(self):
         self.rc.required_attr = 'success'
@@ -118,3 +117,20 @@ class TestMatch(unittest.TestCase):
 
     def test_match_fail(self):
         self.assertRaises(ValiFailError, match_test, "ABCDabcd")
+
+class TestImmutable(unittest.TestCase):
+    class ImmutableHelpClass:
+        immutable_attr = Immutable()
+
+        def __init__(self, value):
+            self.immutable_attr = value
+            self.mutable_attr = value
+
+    def test_match_pass(self):
+        thc = TestImmutable.ImmutableHelpClass(10)
+        thc.mutable_attr = 15
+        self.assertEqual(15, thc.mutable_attr)
+        def call_immutable():
+            thc.immutable_attr = 20
+        self.assertRaises(ValueError, call_immutable)
+        self.assertEqual(10, thc.immutable_attr)

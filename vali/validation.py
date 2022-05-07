@@ -121,7 +121,7 @@ def validator(cls=Vali, *, valis: ValiItems):
 
 class ValiProp:
     """
-        A descriptor for validating the class attribute
+    A descriptor for validating the class attribute
     """
     def __init__(self, valis: ValiItems):
         """
@@ -140,10 +140,7 @@ class ValiProp:
             if vali_result.result == False:
                 raise ValiFailError(vali_result.message)
 
-        if instance is None:
-            type(instance).__dict__[self._name] = value
-        else:
-            instance.__dict__[self._name] = value
+        instance.__dict__[self._name] = value
 
     def __set_name__(self, owner, name):
         self._name = '_' + name

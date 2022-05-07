@@ -14,6 +14,7 @@ __all__ = [
     'Include',
     'Exclude',
     'Match',
+    'Immutable'
 ]
 
 
@@ -101,4 +102,21 @@ class Match(ValidationItem):
         import re
         vali_c = re.compile(self.value)
         return vali_c.search(vali_value) != None
-        
+
+class Immutable:
+    """
+    Immutable is a descriptor helps to define an attribute of an instance of class to be immutable
+    """
+    def __set_name__(self, owner, name):
+        self._name = '_' + name
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self._name)
+
+    def __set__(self, instance, value):
+        if instance.__dict__.get(self._name) is None:
+            instance.__dict__[self._name] = value
+        else:
+            raise ValueError(f'{self._name[1:]} of {instance} is immutable')
