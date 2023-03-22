@@ -3,8 +3,8 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='vali-helper',
-    version='0.1',
+    name='vali',
+    version='0.0.1',
     packages=find_packages(exclude='tests'),
     author='babybabyCloud',
     author_email='babybabycloud2020@gmail.com',

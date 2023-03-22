@@ -60,7 +60,7 @@ class TestRange(unittest.TestCase):
 
 class TestRequire(unittest.TestCase):
     class RequireClass:
-        required_attr = ValiProp([Required(name='required_attr', value=None)])
+        required_attr = ValiProp([Required(name='required_attr')])
         non_required = None
 
     def setUp(self):
@@ -87,23 +87,23 @@ def include_test(age: int):
 
 class TestInclude(unittest.TestCase):
     def test_include_pass(self):
-        include_test(10)
+        include_test(20)
 
     def test_include_fail(self):
-        self.assertRaises(ValiFailError, include_test, 29)
+        self.assertRaises(ValiFailError, include_test, 21)
 
 
 @validator(valis=Exclude(name='age', value=[10, 20, 30]))
-def include_test(age: int):
+def exclude_test(age: int):
     pass
 
 
-class TestInclude(unittest.TestCase):
-    def test_include_pass(self):
-        include_test(39)
+class TestExclude(unittest.TestCase):
+    def test_exclude_pass(self):
+        exclude_test(39)
 
-    def test_include_fail(self):
-        self.assertRaises(ValiFailError, include_test, 20)
+    def test_exclude_fail(self):
+        self.assertRaises(ValiFailError, exclude_test, 20)
 
 
 @validator(valis=Match(name='name', value="^abc.*D$"))
@@ -118,6 +118,7 @@ class TestMatch(unittest.TestCase):
     def test_match_fail(self):
         self.assertRaises(ValiFailError, match_test, "ABCDabcd")
 
+
 class TestImmutable(unittest.TestCase):
     class ImmutableHelpClass:
         immutable_attr = Immutable()
@@ -130,7 +131,18 @@ class TestImmutable(unittest.TestCase):
         thc = TestImmutable.ImmutableHelpClass(10)
         thc.mutable_attr = 15
         self.assertEqual(15, thc.mutable_attr)
+
         def call_immutable():
             thc.immutable_attr = 20
         self.assertRaises(ValueError, call_immutable)
         self.assertEqual(10, thc.immutable_attr)
+
+
+@validator(valis=Required(name='name'))
+def require_param_name(name: str):
+    pass
+
+
+class TestRequired(unittest.TestCase):
+    def test_required(self):
+        self.assertRaises(ValiFailError, require_param_name, name=None)
