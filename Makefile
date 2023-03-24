@@ -1,7 +1,11 @@
+.PHONY: test_dep
+test_dep:
+	pip install coverage pytest
+
 .PHONY: test
-test:
-	python -m unittest discover -s vali/tests
+test: test_dep
+	pytest
 
 .PHONY: cover
-cover:
-	coverage run -m unittest discover -s vali/tests && coverage html
+cover: test_dep
+	coverage run -m pytest && coverage html
