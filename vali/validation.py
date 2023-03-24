@@ -7,7 +7,7 @@ import dataclasses
 from collections.abc import Iterable
 from functools import wraps
 from inspect import signature, BoundArguments
-from typing import Any
+from typing import Any, Optional
 
 
 __all__ = [
@@ -25,7 +25,7 @@ class ValiResult:
     ValiResult defines the validation result
     """
     result: bool = False
-    message: str = None
+    message: Optional[str] = None
 
 
 class ValidationMeta(type):
@@ -50,7 +50,7 @@ class ValidationItem(metaclass=ValidationMeta):
     The subclass should implement the actual validate logic.
     """
     ERROR_MESSAGE_TEMPLATE = "The validation value must {} {}, but provided {}"
-    ERROR_MESSAGE = None
+    ERROR_MESSAGE: Optional[str] = None
 
     def __init__(self, *, name: str, value: Any):
         """
