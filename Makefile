@@ -1,3 +1,8 @@
+SHELL := /bin/bash
+ifeq ($(COV_REPORT_TYPE),)
+COV_REPORT_TYPE := term
+endif
+
 .PHONY: build
 build: test cover lint type
 
@@ -15,7 +20,7 @@ test: test_dep
 
 .PHONY: cover
 cover: test_dep
-	pytest --cov=vali --cov-report=html vali/tests/
+	pytest --cov=vali --cov-report=$(COV_REPORT_TYPE) vali/tests/
 
 .PHONY: lint_dep
 lint_dep: upgrade_pip
