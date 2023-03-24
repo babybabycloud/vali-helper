@@ -1,5 +1,7 @@
 # encoding: utf-8
-
+"""
+helper provides the concrete validation helper classes
+"""
 from numbers import Number
 from typing import Any
 
@@ -162,7 +164,7 @@ class Match(ValidationItem):
         """
         :param vali_value: A regular expression.
         """
-        import re
+        import re  # pylint: disable=import-outside-toplevel
         vali_c = re.compile(self.value)
         return vali_c.search(vali_value) is not None
 
@@ -185,16 +187,18 @@ class Immutable:
     When executing the last line, it will raise ValiFailError
     """
 
+    __name = None
+
     def __set_name__(self, owner, name):
-        self._name = '_' + name
+        self.__name = '_' + name
 
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        return instance.__dict__.get(self._name)
+        return instance.__dict__.get(self.__name)
 
     def __set__(self, instance, value):
-        if instance.__dict__.get(self._name) is None:
-            instance.__dict__[self._name] = value
+        if instance.__dict__.get(self.__name) is None:
+            instance.__dict__[self.__name] = value
         else:
-            raise ValueError(f'{self._name[1:]} of {instance} is immutable')
+            raise ValueError(f'{self.__name[1:]} of {instance} is immutable')

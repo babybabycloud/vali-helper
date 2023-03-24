@@ -1,6 +1,6 @@
 .PHONY: test_dep
 test_dep:
-	pip install coverage pytest
+	pip install pytest pytest-cov
 
 .PHONY: test
 test: test_dep
@@ -8,4 +8,4 @@ test: test_dep
 
 .PHONY: cover
 cover: test_dep
-	coverage run -m pytest && coverage html
+	pytest --cov=vali --cov-report=html vali/tests/
