@@ -3,8 +3,8 @@ ifeq ($(COV_REPORT_TYPE),)
 COV_REPORT_TYPE := term
 endif
 
-.PHONY: build
-build: test cover lint type
+.PHONY: check
+check: test cover lint type
 
 .PHONY: upgrade_pip
 upgrade_pip:
@@ -45,3 +45,7 @@ tox_dep:
 .PHONY: tox
 tox: tox_dep
 	tox --colored yes
+
+.PHONY:
+develop:
+	pip install -e . --config-settings editable_mode=strict
