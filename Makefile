@@ -49,3 +49,12 @@ tox: tox_dep
 .PHONY:
 develop:
 	pip install -e . --config-settings editable_mode=strict
+
+.PHONY: distribute_dep
+distribute_dep: upgrade_pip
+	pip install build twine
+
+.PHONY: upload
+upload: distribute_dep
+	python -m build && \
+	python -m twine upload --repository testpypi --username __token__ --password ${PYPI_PASSWORD} dist/*
