@@ -4,7 +4,9 @@ jobs:
   Check:
     docker:
       - image: cimg/python:3.11.2
+    resource_class: small
     steps:
+      - checkout
       - run:
           name: Check UT, Coverage, Lint and Type
           command: |
