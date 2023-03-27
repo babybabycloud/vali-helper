@@ -1,0 +1,17 @@
+version: 2.1
+
+jobs:
+  Check:
+    docker:
+      - image: cimg/python:3.11.2
+    steps:
+      - run:
+          name: Check UT, Coverage, Lint and Type
+          command: |
+            make check
+
+workflows:
+  Publish-Workflow:
+    jobs:
+      - Check
+    
