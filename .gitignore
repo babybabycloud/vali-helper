@@ -116,3 +116,12 @@ dmypy.json
 
 # vscode
 .vscode/
+
+# PyCharm
+.idea/
+
+# setuptools_scm
+src/vali/_version.py
+
+# pytest
+junit

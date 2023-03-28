@@ -1,36 +1,28 @@
 # vali-helper
 
 #### Description
-{**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}
-
-#### Software Architecture
-Software architecture description
+valid-helper is a util that helps define the validation to the parameters of functions
 
 #### Installation
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
+```bash
+pip install vali_helper
+```
 
 #### Instructions
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+This package is very easy to use. There are some pre-defined validation classes. For example, if a function give_money
+has an int parameter money, and it requires the parameter is greater than "0", it can be written in the below following
+form:
+```python
+from vali import *
 
 
-#### Gitee Feature
+@validator(valis=[GreaterThan(name='money', value=0)])
+def give_money(money: int | float):
+    print(money)
 
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+>>> give_money(-10)
+Traceback (most recent call last):
+
+vali.validation.ValiFailError: The validation value must greater than 0, but provided -10
+```
+More examples could be referred to src/vali/tests
