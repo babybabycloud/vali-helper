@@ -19,7 +19,7 @@ class TestLessThan:
 
     def test_validate_fail(self):
         with pytest.raises(ValiFailError):
-            less_than_test_func(11)
+            less_than_test_func(10)
 
 
 @validator(valis=[GreaterThan(name='args', value=20)])
@@ -163,3 +163,47 @@ class TestRequired:
     def test_required(self):
         with pytest.raises(ValiFailError):
             require_param_name(name=None)
+
+
+@validator(valis=[LessEqual(name='args', value=10)])
+def less_equal_test_func(args: int):
+    pass
+
+
+class TestLessEqual:
+    def test_validate_pass(self):
+        less_equal_test_func(9)
+        less_equal_test_func(10)
+
+    def test_validate_fail(self):
+        with pytest.raises(ValiFailError):
+            less_equal_test_func(11)
+
+
+@validator(valis=[GreaterEqual(name='args', value=10)])
+def greater_equal_test_func(args: int):
+    pass
+
+
+class TestGreatEqual:
+    def test_validate_pass(self):
+        greater_equal_test_func(10)
+        greater_equal_test_func(11)
+
+    def test_validate_fail(self):
+        with pytest.raises(ValiFailError):
+            greater_equal_test_func(9)
+
+
+@validator(valis=[DateFormat(name='args', value='%Y-%m-%d')])
+def date_format_test_func(args: str):
+    pass
+
+
+class TestDateFormat:
+    def test_validate_pass(self):
+        date_format_test_func('2024-03-01')
+
+    def test_validate_fail(self):
+        with pytest.raises(ValiFailError):
+            date_format_test_func('2024/03/01')

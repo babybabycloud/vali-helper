@@ -15,20 +15,24 @@ __all__ = [
     'Include',
     'Exclude',
     'Match',
-    'Immutable'
+    'Immutable',
+    'LessEqual',
+    'GreaterEqual',
+    'DateFormat',
 ]
 
 
 class LessThan(ValidationItem):
     """
-    Validate for if the value less's than validation value
+    Validate for if the value less than the validation value
 
     Example:
         @validator(valis=[LessThan(name='args', value=10)])
         def less_than_test_func(args: int):
             pass
 
-    When calling less_than_test_func(11), it will raise ValiFailError
+    When calling
+        less_than_test_func(10), it will raise ValiFailError
     """
     ERROR_MESSAGE = "less than"
 
@@ -202,3 +206,64 @@ class Immutable:
             instance.__dict__[self.__name] = value
         else:
             raise ValueError(f'{self.__name[1:]} of {instance} is immutable')
+
+
+class LessEqual(ValidationItem):
+    """
+    Validate for if the value less and equal the validation value
+
+    Example:
+        @validator(valis=[LessEqual(name='args', value=10)])
+        def less_equal_test_func(args: int):
+            pass
+
+    When calling
+        less_equal_test_func(11), it will raise ValiFailError
+    """
+    ERROR_MESSAGE = "less equal"
+
+    def test(self, vali_value: Number) -> bool:
+        return vali_value <= self.value
+
+
+class GreaterEqual(ValidationItem):
+    """
+    Validate for if the value greater and equal the validation value
+
+    Example:
+        @validator(valis=[GreaterEqual(name='args', value=10)])
+        def greater_equal_test_func(args: int):
+            pass
+
+    When calling
+        greater_equal_test_func(9), it will raise ValiFailError
+    """
+    ERROR_MESSAGE = "great equal"
+
+    def test(self, vali_value: Number) -> bool:
+        return vali_value >= self.value
+
+
+class DateFormat(ValidationItem):
+    """
+    Validate for if the value is satisfied with the validation value
+
+    Example:
+        @validator(valis=[DateFormat(name='args', value='%Y-%m-%d')])
+        def date_format_test_func(args: str):
+            pass
+
+    When calling
+        date_format_test_func('2024/03/01'), it will raise ValiFailError
+    """
+    ERROR_MESSAGE = "be in date format"
+
+    def test(self, vali_value: str) -> bool:
+        from datetime import datetime
+
+        try:
+            datetime.strptime(vali_value, self.value)
+            return True
+        except ValueError as e:
+            return False
+

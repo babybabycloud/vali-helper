@@ -3,6 +3,11 @@ ifeq ($(COV_REPORT_TYPE),)
 COV_REPORT_TYPE := term
 endif
 
+junit := junit
+ifneq ($(PYTEST_JUNIT_REPORT),)
+PYTEST_JUNIT_REPORT := --junit-xml=$(junit)/$(junit).xml
+endif
+
 .PHONY: upgrade_pip
 upgrade_pip:
 	pip install pip --upgrade
@@ -20,19 +25,20 @@ install: build
 	pip install dist/*.whl
 
 .PHONY: check
-check: install test cover lint type
+check: test cover lint type
 
 .PHONY: test_dep
 test_dep: upgrade_pip
 	pip install pytest pytest-cov
 
 .PHONY: test
-test: test_dep
-	pytest
+test: test_dep install
+	rm -rf $(junit) || mkdir $(junit)
+	pytest $(PYTEST_JUNIT_REPORT)
 
 .PHONY: cover
 cover: test_dep
-	pytest --cov=vali --cov-report=$(COV_REPORT_TYPE) vali/tests/
+	pytest --cov=vali --cov-report=$(COV_REPORT_TYPE) src/vali/tests/
 
 .PHONY: lint_dep
 lint_dep: upgrade_pip
@@ -40,7 +46,7 @@ lint_dep: upgrade_pip
 
 .PHONY: lint
 lint: lint_dep
-	pylint vali
+	pylint --ignore=_version.py vali
 
 .PHONY: mypy_dep
 mypy_dep: upgrade_pip
@@ -48,7 +54,7 @@ mypy_dep: upgrade_pip
 
 .PHONY: type
 type: mypy_dep
-	mypy vali/
+	mypy src/vali/
 
 .PHONY: tox_dep
 tox_dep: upgrade_pip
@@ -63,14 +69,14 @@ develop: upgrade_pip
 	pip install -e . --config-settings editable_mode=strict
 	
 .PHONY: upload_dep
-upload_dep：upgrade_pip
+upload_dep: upgrade_pip
 	pip install twine
 
 .PHONY: upload
-upload: build upload_dep
+upload: upload_dep
 	python -m twine upload --username __token__ --password ${PYPI_PASSWORD} dist/*
 
 .PHONY: clean
 clean:
-        pip uninstall -y vali-helper && \
-        rm -rf build dist
+	pip uninstall -y vali-helper && \
+    rm -rf build dist $(junit)

@@ -119,3 +119,9 @@ dmypy.json
 
 # PyCharm
 .idea/
+
+# setuptools_scm
+src/vali/_version.py
+
+# pytest
+junit
