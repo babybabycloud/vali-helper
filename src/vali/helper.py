@@ -2,10 +2,13 @@
 """
 helper provides the concrete validation helper classes
 """
+from datetime import date, datetime
 from numbers import Number
 from typing import Any
 
+from .exception import PackageNotExistError, UnsupportedError
 from .validation import ValidationItem
+
 
 __all__ = [
     'LessThan',
@@ -19,6 +22,8 @@ __all__ = [
     'LessEqual',
     'GreaterEqual',
     'DateFormat',
+    'BeforeDate',
+    'AfterDate',
 ]
 
 
@@ -160,7 +165,7 @@ class Match(ValidationItem):
         @validator(valis=Match(name='name', value="^abc.*D$"))
         def match_test(name: str):
             pass
-    When calling match_test(ABCDabcd), it will raise ValiFailError
+    When calling match_test(ABCD,abcd), it will raise ValiFailError
     """
     ERROR_MESSAGE = "not match to"
 
@@ -259,11 +264,73 @@ class DateFormat(ValidationItem):
     ERROR_MESSAGE = "be in date format"
 
     def test(self, vali_value: str) -> bool:
-        from datetime import datetime
-
         try:
             datetime.strptime(vali_value, self.value)
             return True
-        except ValueError as e:
+        except ValueError:
             return False
 
+
+_Date_Union = datetime | date | str
+
+
+class BeforeDate(ValidationItem):
+    """
+    Validate for if the value is before the date
+
+    Example:
+        @validator(valis=[BeforeDate(name='args', value='2024-03-03')])
+        def before_date_test_func(args: str):
+            pass
+
+    When calling
+        before_date_test_func('2024/03/10'), it will raise ValiFailError
+    """
+    ERROR_MESSAGE = "before date"
+
+    def __init__(self, *, name: str, value: _Date_Union):
+        super().__init__(name=name, value=None)
+        self.value = _ensure_datetime(value)
+
+    def test(self, vali_value: _Date_Union) -> bool:
+        value = _ensure_datetime(vali_value)
+        return value < self.value
+
+
+class AfterDate(ValidationItem):
+    """
+    Validate for if the value is after the date
+
+    Example:
+        @validator(valis=[DateDate(name='args', value='2024-03-03')])
+        def date_date_test_func(args: str):
+            pass
+
+    When calling
+        date_date_test_func('2024/03/01'), it will raise ValiFailError
+    """
+    ERROR_MESSAGE = "after date"
+
+    def __init__(self, *, name: str, value: _Date_Union):
+        super().__init__(name=name, value=None)
+        self.value = _ensure_datetime(value)
+
+    def test(self, vali_value: _Date_Union) -> bool:
+        value = _ensure_datetime(vali_value)
+        return value > self.value
+
+
+def _ensure_datetime(value: _Date_Union) -> datetime:
+    if isinstance(value, str):
+        try:
+            from dateutil.parser import parse # pylint: disable=import-outside-toplevel
+            return parse(value)
+        except ImportError as e:
+            raise PackageNotExistError() from e
+    elif isinstance(value, date):
+        return datetime.fromordinal(value.toordinal())
+    elif isinstance(value, datetime):
+        return value
+    else:
+        raise UnsupportedError(f"Unsupported type {type(value)}, "
+                               f"currently only support {_Date_Union}")

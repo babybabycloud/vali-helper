@@ -54,7 +54,7 @@ mypy_dep: upgrade_pip
 
 .PHONY: type
 type: mypy_dep
-	mypy src/vali/
+	mypy --install-types --non-interactive src/vali/
 
 .PHONY: tox_dep
 tox_dep: upgrade_pip

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import unittest
+from datetime import date, datetime
 from typing import Optional
 
 import pytest
@@ -207,3 +208,37 @@ class TestDateFormat:
     def test_validate_fail(self):
         with pytest.raises(ValiFailError):
             date_format_test_func('2024/03/01')
+
+
+@validator(valis=[BeforeDate(name='args', value=datetime.strptime("2024-03-02", "%Y-%m-%d"))])
+def before_date_test_func(args):
+    pass
+
+
+class TestBeforeDate:
+    def test_validate_pass(self):
+        before_date_test_func(date(2022, 1, 24))
+
+    def test_validate_fail(self):
+        with pytest.raises(ValiFailError):
+            before_date_test_func(datetime.strptime('2024/03/10', "%Y/%m/%d"))
+
+        with pytest.raises(UnsupportedError):
+            before_date_test_func(56)
+
+
+@validator(valis=[AfterDate(name='args', value=datetime.strptime("2024-03-02", "%Y-%m-%d"))])
+def after_date_test_func(args):
+    pass
+
+
+class TestAfterDate:
+    def test_validate_pass(self):
+        after_date_test_func(date(2024, 10, 24))
+
+    def test_validate_fail(self):
+        with pytest.raises(ValiFailError):
+            after_date_test_func(datetime.strptime('2024/02/10', "%Y/%m/%d"))
+
+        with pytest.raises(UnsupportedError):
+            after_date_test_func(56)

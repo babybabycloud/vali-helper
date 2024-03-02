@@ -9,13 +9,14 @@ from functools import wraps
 from inspect import signature, BoundArguments
 from typing import Any, Optional
 
+from .exception import ValiFailError
+
 
 __all__ = [
     'ValidationItem',
     'Vali',
     'validator',
     'ValiProp',
-    'ValiFailError'
 ]
 
 
@@ -151,11 +152,3 @@ class ValiProp:
 
     def __set_name__(self, owner, name):
         self.__name = '_' + name
-
-
-class ValiFailError(Exception):
-    """
-    The Exception would be raised when validation failed.
-    """
-    def __init__(self, message):
-        self.message = message

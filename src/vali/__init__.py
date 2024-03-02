@@ -5,5 +5,6 @@ instance
 
 This module aggregate all the members in helper and validation modules
 """
+from .exception import *
 from .helper import *
 from .validation import *
