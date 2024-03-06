@@ -165,7 +165,7 @@ class Match(ValidationItem):
         @validator(valis=Match(name='name', value="^abc.*D$"))
         def match_test(name: str):
             pass
-    When calling match_test(ABCD,abcd), it will raise ValiFailError
+    When calling match_test("ABCD,abcd"), it will raise ValiFailError
     """
     ERROR_MESSAGE = "not match to"
 
@@ -323,7 +323,7 @@ class AfterDate(ValidationItem):
 def _ensure_datetime(value: _Date_Union) -> datetime:
     if isinstance(value, str):
         try:
-            from dateutil.parser import parse # pylint: disable=import-outside-toplevel
+            from dateutil.parser import parse  # pylint: disable=import-outside-toplevel
             return parse(value)
         except ImportError as e:
             raise PackageNotExistError() from e
